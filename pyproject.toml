@@ -1,0 +1,16 @@
+[project]
+name = "agentlens"
+version = "0.1.0"
+description = "Offline AI agent debugging: record, replay, analyze failures, and track costs."
+authors = [{name = "Auriel Analytics"}]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = []  # Minimal, add "click" later if needed
+
+[project.scripts]
+agentlens = "agentlens.core:cli"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
