@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "auriel-agentlens"
-version = "0.1.0"
+version = "0.1.1"
 description = "An open-source offline AI agent debugging tool: record, replay, analyze failures, and track API costs—free and local."
 readme = "README.md"
 license = { text = "MIT" }
