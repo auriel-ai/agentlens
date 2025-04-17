@@ -17,7 +17,7 @@ When developing AI agents, debugging is costly and time-consuming. Each iteratio
 ## Installation
 
 ```bash
-pip install agentlens
+pip install auriel-agentlens
 ```
 
 ## Quick Start

@@ -1,39 +1,41 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "auriel-agentlens"
 version = "0.1.0"
-description = "Offline AI agent debugging: record, replay, analyze failures, and track costs."
-authors = [{name = "Auriel Analytics"}]
-license = {text = "MIT"}
+description = "An open-source offline AI agent debugging tool: record, replay, analyze failures, and track API costs—free and local."
 readme = "README.md"
-requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [
+    { name = "Jack Dolby" },
+]
+
 dependencies = [
-    "click>=8.0.0",  # CLI support
-    "rich>=10.0.0",  # Better terminal output
-]  
+    "click",
+    "rich",
+]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
-    "black>=23.0.0",
-    "isort>=5.0.0",
-    "flake8>=6.0.0",
-    "build>=0.10.0",
+    "pytest",
+    "pytest-cov",
+    "pytest-asyncio",
+    "black",
+    "ruff",
+    "mypy",
+    "pre-commit",
 ]
 langchain = [
-    "langchain>=0.0.200",
+    "langchain",
 ]
 openai = [
-    "openai>=0.27.0",
-]
-all = [
-    "langchain>=0.0.200",
-    "openai>=0.27.0",
+    "openai",
 ]
 
 [project.scripts]
 agentlens = "agentlens.core:cli"
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+[tool.hatch.build.targets.wheel]
+packages = ["agentlens"]

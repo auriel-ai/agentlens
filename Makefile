@@ -10,11 +10,10 @@ install:
 # Install development dependencies
 dev:
 	pip3 install -e ".[dev]"
-	pip3 install pytest pytest-cov black isort flake8
 
 # Run tests
 test:
-	python3 -m unittest discover -s tests
+	python3 -m pytest tests/
 
 # Run tests with coverage
 coverage:
@@ -28,19 +27,21 @@ clean:
 	rm -rf .coverage
 	rm -rf htmlcov/
 	find . -type d -name "__pycache__" -exec rm -rf {} +
-	find . -type d -name "*.pyc" -delete
+	find . -type f -name "*.pyc" -delete
 
 # Format code
 format:
-	python3 -m isort agentlens tests examples
 	python3 -m black agentlens tests examples
+	python3 -m ruff check --fix agentlens tests examples
 
 # Run linting
 lint:
-	python3 -m flake8 agentlens tests examples
+	python3 -m ruff check agentlens tests examples
+	python3 -m mypy agentlens
 
 # Build package
 build: clean
+	python3 -m pip install build hatchling
 	python3 -m build
 
 # Run examples
