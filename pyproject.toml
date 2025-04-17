@@ -1,5 +1,5 @@
 [project]
-name = "agentlens"
+name = "auriel-agentlens"
 version = "0.1.0"
 description = "Offline AI agent debugging: record, replay, analyze failures, and track costs."
 authors = [{name = "Auriel Analytics"}]
