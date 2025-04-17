@@ -20,53 +20,176 @@ When developing AI agents, debugging is costly and time-consuming. Each iteratio
 pip install agentlens
 ```
 
-## Usage
-
-### Recording Agent Runs
+## Quick Start
 
 ```python
 from agentlens import AgentLens
 
+# Initialize AgentLens
 lens = AgentLens()
 
+# 1. Record agent runs with a decorator
 @lens.record
-def agent_function(input_query):
+def my_agent_function(query):
     # Your agent implementation
     return result
 
 # Use your agent normally - AgentLens records in the background
-response = agent_function("Process this data")
-```
+response = my_agent_function("Process this data")
 
-### Replaying and Analyzing
+# 2. Or use the context manager for more control
+with lens.context_record(model="gpt-4") as recording:
+    # Your agent code here
+    result = some_function()
+    recording.log_run(
+        input_data=query,
+        output_data=result,
+        token_usage={"prompt_tokens": 10, "completion_tokens": 20}
+    )
 
-```python
-# Replay the last recorded run
+# 3. Replay the last recorded run
 lens.replay()
 
-# Replay a specific run
-lens.replay(run_id=3)
-
-# Analyze failures in the last run
+# 4. Analyze failures in the last run
 lens.analyze()
 
-# Track estimated costs
-lens.costs()
+# 5. Track estimated costs
+lens.costs(all_runs=True)
+```
+
+## Framework Integrations
+
+### LangChain Integration
+
+```python
+from agentlens import AgentLens
+from agentlens.integrations.langchain import LangChainLens
+
+# Initialize AgentLens and LangChainLens
+lens = AgentLens()
+lc_lens = LangChainLens(lens=lens)
+
+# Wrap a LangChain LLM, Chain or Agent
+llm = OpenAI(temperature=0.7)
+wrapped_llm = lc_lens.wrap_llm(llm)
+
+# Use wrapped components as normal
+response = wrapped_llm("What are three best practices for writing clean code?")
+
+# Wrap a LangChain Chain
+chain = LLMChain(llm=llm, prompt=prompt)
+wrapped_chain = lc_lens.wrap_chain(chain)
+
+# Wrap a LangChain Agent
+agent = initialize_agent(tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION)
+wrapped_agent = lc_lens.wrap_agent(agent)
+```
+
+### OpenAI Integration
+
+```python
+from agentlens import AgentLens
+from agentlens.integrations.openai import OpenAILens
+import openai
+
+# Initialize AgentLens and OpenAILens
+lens = AgentLens()
+openai_lens = OpenAILens(lens=lens)
+
+# Wrap the OpenAI client
+client = openai.OpenAI()
+wrapped_client = openai_lens.wrap_client(client)
+
+# Use the wrapped client as normal
+response = wrapped_client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Explain debugging in one paragraph."}
+    ]
+)
 ```
 
 ## Key Features
 
 ### Run Recording
+
 Records agent inputs, outputs, tool calls, and token usage to local storage without requiring additional API calls.
 
+```python
+@lens.record
+def agent_function(input_query):
+    # Agent implementation
+    return result
+```
+
+Or using the context manager for more control:
+
+```python
+with lens.context_record(model="gpt-4") as recording:
+    # Custom agent code
+    result = process_query(query)
+    recording.log_run(
+        input_data=query,
+        output_data=result,
+        token_usage=token_count,
+        tool_calls=tools_used
+    )
+```
+
 ### Offline Replay
+
 Reproduces agent runs locally, allowing you to inspect each step without consuming API credits.
 
+```python
+# Replay the most recent run
+lens.replay()
+
+# Replay a specific run by ID
+lens.replay(run_id=3)
+```
+
 ### Failure Analysis
+
 Automatically identifies common issues like timeouts, empty outputs, and potential hallucinations based on output patterns.
 
+```python
+# Analyze the most recent run
+lens.analyze()
+
+# Analyze a specific run
+lens.analyze(run_id=3)
+```
+
 ### Cost Tracking
+
 Estimates API usage costs based on token counts and configurable pricing models.
+
+```python
+# Track costs for the most recent run
+lens.costs()
+
+# Track costs for all runs
+lens.costs(all_runs=True)
+
+# Track costs for a specific run
+lens.costs(run_id=3)
+```
+
+## Command Line Interface
+
+AgentLens includes a CLI for working with recorded runs:
+
+```bash
+# Replay a run
+agentlens replay --file runs.jsonl
+
+# Analyze a run
+agentlens analyze --id 3 --file runs.jsonl
+
+# Calculate costs
+agentlens costs --all --file runs.jsonl
+```
 
 ## Use Cases
 
@@ -77,9 +200,11 @@ Estimates API usage costs based on token counts and configurable pricing models.
 
 ## Framework Compatibility
 
-Currently focusing on integration with:
-- LangChain (primary)
-- Planned support for CrewAI and other frameworks
+Currently supporting:
+- Direct Python function decorators and context managers
+- LangChain (LLMs, Chains, and Agents)
+- OpenAI Python client (both modern and legacy versions)
+- Planning future support for CrewAI and other frameworks
 
 ## Comparison with Alternatives
 
@@ -93,13 +218,26 @@ AgentLens is focused specifically on offline debugging and development iteration
 | Integration | Single decorator | Platform-specific |
 | Analysis | Offline-first | Real-time analytics |
 
-## Roadmap
+## Development Setup
 
-1. Core recording and replay functionality
-2. Failure analysis capabilities
-3. Cost tracking implementation
-4. Framework integrations expansion
-5. CLI tools for log management
+To set up AgentLens for development:
+
+```bash
+# Clone the repository
+git clone https://github.com/auriel-ai/agentlens.git
+cd agentlens
+
+# Run the setup script
+./setup_and_run.sh
+```
+
+## Examples
+
+Check out the `examples/` directory for full examples including:
+- Basic usage with the decorator and context manager
+- LangChain integration examples
+- OpenAI client integration
+- Command line interface examples
 
 ## Contributing
 

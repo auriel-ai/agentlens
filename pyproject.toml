@@ -6,7 +6,30 @@ authors = [{name = "Auriel Analytics"}]
 license = {text = "MIT"}
 readme = "README.md"
 requires-python = ">=3.8"
-dependencies = []  # Minimal, add "click" later if needed
+dependencies = [
+    "click>=8.0.0",  # CLI support
+    "rich>=10.0.0",  # Better terminal output
+]  
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "isort>=5.0.0",
+    "flake8>=6.0.0",
+    "build>=0.10.0",
+]
+langchain = [
+    "langchain>=0.0.200",
+]
+openai = [
+    "openai>=0.27.0",
+]
+all = [
+    "langchain>=0.0.200",
+    "openai>=0.27.0",
+]
 
 [project.scripts]
 agentlens = "agentlens.core:cli"
